@@ -2,747 +2,664 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Checklist: Registro VA → MD</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#F2F2F7">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Transferencia VA → MD</title>
     <style>
+        :root {
+            --bg-color: #F2F2F7;
+            --card-bg: #FFFFFF;
+            --primary: #007AFF;
+            --text-primary: #000000;
+            --text-secondary: #8E8E93;
+            --separator: #C6C6C8;
+            --success: #34C759;
+            --warning: #FF9500;
+            --danger: #FF3B30;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #000000;
+                --card-bg: #1C1C1E;
+                --primary: #0A84FF;
+                --text-primary: #FFFFFF;
+                --text-secondary: #98989D;
+                --separator: #38383A;
+            }
+        }
+
         * {
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
             margin: 0;
-            padding: 16px;
-            padding-bottom: 100px;
+            padding: 0;
+            padding-bottom: 80px; /* Space for bottom content */
         }
 
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
+        /* Sticky Header with Blur */
+        .nav-bar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(242, 242, 247, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 0.5px solid rgba(0,0,0,0.1);
+            padding: 16px 20px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
-        header {
-            text-align: center;
-            color: white;
-            margin-bottom: 20px;
+        @media (prefers-color-scheme: dark) {
+            .nav-bar {
+                background: rgba(0, 0, 0, 0.8);
+                border-bottom: 0.5px solid rgba(255,255,255,0.1);
+            }
         }
 
-        header h1 {
-            font-size: 24px;
-            margin: 0 0 8px 0;
-        }
-
-        header p {
+        .nav-title {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: -0.01em;
+            color: var(--text-secondary);
             margin: 0;
-            opacity: 0.9;
-            font-size: 14px;
         }
 
-        .progress-bar {
-            background: rgba(255,255,255,0.3);
-            border-radius: 20px;
-            height: 12px;
-            margin: 16px 0;
+        .main-title {
+            font-size: 34px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin: 10px 20px 20px;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 4px;
+            background-color: rgba(142, 142, 147, 0.2);
+            border-radius: 2px;
             overflow: hidden;
+            margin-top: 4px;
         }
 
         .progress-fill {
-            background: #4ade80;
             height: 100%;
-            border-radius: 20px;
-            transition: width 0.5s ease;
+            background-color: var(--primary);
             width: 0%;
+            transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        .progress-text {
-            text-align: center;
-            color: white;
-            font-size: 14px;
-            font-weight: 600;
+        .progress-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4px;
         }
 
-        .phase {
-            background: white;
-            border-radius: 16px;
-            margin-bottom: 12px;
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            margin: 0 16px 16px;
             overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
 
-        .phase-header {
+        .section-header {
             padding: 16px;
-            cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            user-select: none;
+            cursor: pointer;
         }
 
-        .phase-header h2 {
-            margin: 0;
-            font-size: 16px;
-            color: #1f2937;
-        }
-
-        .phase-header .phase-num {
-            background: #667eea;
-            color: white;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
+        .section-title {
+            font-size: 17px;
             font-weight: 600;
-            margin-right: 12px;
+            margin: 0;
         }
 
-        .phase-header .phase-num.complete {
-            background: #4ade80;
+        .chevron {
+            color: var(--text-secondary);
+            transition: transform 0.3s ease;
+            width: 14px;
+            height: 14px;
+            opacity: 0.5;
         }
 
-        .phase-header .left {
-            display: flex;
-            align-items: center;
+        .card.open .chevron {
+            transform: rotate(90deg);
         }
 
-        .phase-header .arrow {
-            font-size: 20px;
-            color: #9ca3af;
-            transition: transform 0.3s;
-        }
-
-        .phase.open .arrow {
-            transform: rotate(180deg);
-        }
-
-        .phase-content {
+        .card-content {
             display: none;
             padding: 0 16px 16px;
+            animation: slideDown 0.3s ease-out;
         }
 
-        .phase.open .phase-content {
+        .card.open .card-content {
             display: block;
         }
 
-        .task {
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Savings Highlight */
+        .savings-card {
+            background: linear-gradient(135deg, #007AFF 0%, #0056B3 100%);
+            color: white;
+        }
+        
+        .savings-card .section-title, .savings-card .chevron {
+            color: white;
+            opacity: 1;
+        }
+        
+        .savings-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 12px;
+        }
+
+        .big-number {
+            font-size: 32px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .savings-detail {
+            font-size: 13px;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+
+        /* Checkbox Items */
+        .task-item {
             display: flex;
             align-items: flex-start;
             padding: 12px 0;
-            border-bottom: 1px solid #f3f4f6;
+            border-bottom: 0.5px solid var(--separator);
         }
 
-        .task:last-child {
+        .task-item:last-child {
             border-bottom: none;
         }
 
-        .task input[type="checkbox"] {
-            display: none;
-        }
-
-        .task label {
-            display: flex;
-            align-items: flex-start;
-            cursor: pointer;
-            flex: 1;
-        }
-
-        .checkbox {
-            width: 24px;
-            height: 24px;
-            border: 2px solid #d1d5db;
-            border-radius: 6px;
+        .checkbox-wrapper {
+            position: relative;
+            width: 22px;
+            height: 22px;
             margin-right: 12px;
+            margin-top: 2px;
             flex-shrink: 0;
+        }
+
+        input[type="checkbox"] {
+            opacity: 0;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .custom-checkbox {
+            width: 22px;
+            height: 22px;
+            border: 2px solid #C7C7CC;
+            border-radius: 50%;
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s;
         }
 
-        .task input:checked + label .checkbox {
-            background: #4ade80;
-            border-color: #4ade80;
+        input:checked + .custom-checkbox {
+            background-color: var(--primary);
+            border-color: var(--primary);
         }
 
-        .checkbox::after {
-            content: '✓';
-            color: white;
-            font-size: 14px;
-            font-weight: bold;
-            opacity: 0;
-            transition: opacity 0.2s;
+        input:checked + .custom-checkbox::after {
+            content: '';
+            width: 10px;
+            height: 5px;
+            border-left: 2px solid white;
+            border-bottom: 2px solid white;
+            transform: rotate(-45deg);
+            margin-top: -2px;
         }
 
-        .task input:checked + label .checkbox::after {
-            opacity: 1;
-        }
-
-        .task-text {
+        .task-content {
             flex: 1;
         }
 
         .task-title {
-            color: #1f2937;
-            font-size: 15px;
-            line-height: 1.4;
-        }
-
-        .task input:checked + label .task-title {
-            text-decoration: line-through;
-            color: #9ca3af;
-        }
-
-        .task-detail {
-            color: #6b7280;
-            font-size: 13px;
-            margin-top: 4px;
-        }
-
-        .info-box {
-            background: #fef3c7;
-            border-left: 4px solid #f59e0b;
-            padding: 12px;
-            margin: 12px 0;
-            border-radius: 0 8px 8px 0;
-            font-size: 13px;
-            color: #92400e;
-        }
-
-        .info-box.warning {
-            background: #fee2e2;
-            border-color: #ef4444;
-            color: #991b1b;
-        }
-
-        .info-box.success {
-            background: #dcfce7;
-            border-color: #22c55e;
-            color: #166534;
-        }
-
-        .link-btn {
-            display: block;
-            background: #667eea;
-            color: white;
-            text-decoration: none;
-            padding: 12px 16px;
-            border-radius: 8px;
-            text-align: center;
-            font-weight: 500;
-            margin: 8px 0;
-            font-size: 14px;
-        }
-
-        .link-btn:active {
-            opacity: 0.8;
-        }
-
-        .phone-link {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .section-title {
-            font-size: 13px;
-            font-weight: 600;
-            color: #6b7280;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin: 16px 0 8px;
-        }
-
-        .quick-links {
-            background: white;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .quick-links h3 {
-            margin: 0 0 12px;
             font-size: 16px;
-            color: #1f2937;
+            line-height: 1.3;
+            margin-bottom: 2px;
+            transition: color 0.2s;
         }
 
-        .reset-btn {
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 14px;
-            cursor: pointer;
-            display: block;
-            margin: 20px auto;
-        }
-
-        .cost-table {
-            width: 100%;
+        .task-desc {
             font-size: 13px;
-            margin: 8px 0;
+            color: var(--text-secondary);
+            line-height: 1.3;
         }
 
-        .cost-table td {
-            padding: 6px 0;
-            border-bottom: 1px solid #f3f4f6;
+        input:checked ~ .task-content .task-title {
+            text-decoration: line-through;
+            color: var(--text-secondary);
         }
 
-        .cost-table td:last-child {
-            text-align: right;
-            font-weight: 500;
-        }
-
-        .notes-area {
-            width: 100%;
-            border: 1px solid #d1d5db;
+        /* Information Callouts */
+        .info-callout {
+            background: rgba(142, 142, 147, 0.12);
             border-radius: 8px;
             padding: 12px;
-            font-size: 14px;
-            font-family: inherit;
-            resize: vertical;
-            min-height: 80px;
+            margin: 8px 0;
+            font-size: 13px;
+            color: var(--text-primary);
+            display: flex;
+            gap: 10px;
         }
+        
+        .info-callout.warning {
+            background: rgba(255, 149, 0, 0.15);
+            color: #C45500;
+        }
+
+        .info-callout.success {
+            background: rgba(52, 199, 89, 0.15);
+            color: #007D35;
+        }
+
+        .icon {
+            font-size: 16px;
+        }
+
+        /* Buttons */
+        .action-btn {
+            display: block;
+            width: 100%;
+            text-align: center;
+            background-color: rgba(0, 122, 255, 0.1);
+            color: var(--primary);
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            margin-top: 12px;
+        }
+
+        .action-btn:active {
+            opacity: 0.7;
+        }
+
+        /* Cost Table */
+        .cost-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .cost-row.header {
+            font-weight: 600;
+            opacity: 0.7;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        
+        .cost-row:last-child {
+            border-bottom: none;
+        }
+
+        .reset-container {
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .reset-link {
+            color: var(--text-secondary);
+            font-size: 14px;
+            text-decoration: underline;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🚗 Registro VA → MD</h1>
-            <p>Guía paso a paso para transferir tu registro</p>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
-            </div>
-            <div class="progress-text" id="progressText">0 de 20 completados</div>
-        </header>
 
-        <!-- FASE 1 -->
-        <div class="phase open" data-phase="1">
-            <div class="phase-header" onclick="togglePhase(this)">
-                <div class="left">
-                    <div class="phase-num">1</div>
-                    <h2>Seguro de Maryland</h2>
-                </div>
-                <span class="arrow">▼</span>
-            </div>
-            <div class="phase-content">
-                <div class="info-box">
-                    ⏰ <strong>Hazlo primero.</strong> Sin seguro de MD no puedes registrar el auto.
-                </div>
+    <div class="nav-bar">
+        <div class="nav-title">Toyota RAV4 2025</div>
+        <div class="progress-label">
+            <span id="progressText">0% Completado</span>
+        </div>
+        <div class="progress-container">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+    </div>
 
-                <div class="task">
+    <h1 class="main-title">Registro VA <span style="color:var(--text-secondary); font-weight:300;">&rarr;</span> MD</h1>
+
+    <!-- ANALYSIS CARD -->
+    <div class="card savings-card open">
+        <div class="section-header" onclick="toggleCard(this)">
+            <span class="section-title">Análisis Financiero</span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </div>
+        <div class="card-content">
+            <div class="savings-summary">
+                <div>
+                    <div style="font-size: 13px; opacity: 0.8; text-transform: uppercase; font-weight: 600;">Ahorro en 5 Años</div>
+                    <div class="big-number">$3,815</div>
+                </div>
+                <div style="text-align: right; font-size: 12px; opacity: 0.9;">
+                    Maryland vs. Virginia<br>
+                    (Fairfax County)
+                </div>
+            </div>
+            
+            <div style="background: rgba(0,0,0,0.2); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                <div class="cost-row header">
+                    <span>Costo Propiedad (5 años)</span>
+                    <span>Total</span>
+                </div>
+                <div class="cost-row">
+                    <span>Virginia (Impuestos anuales)</span>
+                    <span>~$6,670</span>
+                </div>
+                <div class="cost-row">
+                    <span style="font-weight: 600;">Maryland</span>
+                    <span style="font-weight: 600;">~$2,855</span>
+                </div>
+            </div>
+
+            <p class="savings-detail">
+                <strong>¿Por qué?</strong> Virginia cobra impuesto de propiedad personal sobre el auto <em>cada año</em> (~$900 el primer año). Maryland <strong>NO</strong> tiene este impuesto anual.
+            </p>
+        </div>
+    </div>
+
+    <!-- PHASE 1 -->
+    <div class="card open">
+        <div class="section-header" onclick="toggleCard(this)">
+            <span class="section-title">1. Seguro de Auto</span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </div>
+        <div class="card-content">
+            <div class="info-callout">
+                <span class="icon">ℹ️</span>
+                <span>Obligatorio tener seguro de MD antes de registrar.</span>
+            </div>
+
+            <div class="task-item">
+                <div class="checkbox-wrapper">
                     <input type="checkbox" id="t1" onchange="saveProgress()">
-                    <label for="t1">
-                        <div class="checkbox"></div>
-                        <div class="task-text">
-                            <div class="task-title">Llamar a tu compañía de seguro</div>
-                            <div class="task-detail">Pregunta si están licenciados en Maryland</div>
-                        </div>
-                    </label>
+                    <div class="custom-checkbox"></div>
                 </div>
+                <div class="task-content">
+                    <div class="task-title">Contactar aseguradora</div>
+                    <div class="task-desc">Confirmar que tienen licencia para Maryland.</div>
+                </div>
+            </div>
 
-                <div class="task">
+            <div class="task-item">
+                <div class="checkbox-wrapper">
                     <input type="checkbox" id="t2" onchange="saveProgress()">
-                    <label for="t2">
-                        <div class="checkbox"></div>
-                        <div class="task-text">
-                            <div class="task-title">Cambiar póliza a dirección de Maryland</div>
-                            <div class="task-detail">La nueva dirección debe aparecer en la tarjeta</div>
-                        </div>
-                    </label>
+                    <div class="custom-checkbox"></div>
                 </div>
+                <div class="task-content">
+                    <div class="task-title">Cambiar póliza a dirección MD</div>
+                    <div class="task-desc">La nueva dirección debe figurar en la tarjeta.</div>
+                </div>
+            </div>
 
-                <div class="task">
+            <div class="task-item">
+                <div class="checkbox-wrapper">
                     <input type="checkbox" id="t3" onchange="saveProgress()">
-                    <label for="t3">
-                        <div class="checkbox"></div>
-                        <div class="task-text">
-                            <div class="task-title">Pedir formulario FR-19</div>
-                            <div class="task-detail">Certificación de seguro para Maryland</div>
-                        </div>
-                    </label>
+                    <div class="custom-checkbox"></div>
                 </div>
+                <div class="task-content">
+                    <div class="task-title">Solicitar formulario FR-19</div>
+                    <div class="task-desc">Es la certificación oficial para el MVA.</div>
+                </div>
+            </div>
 
-                <div class="task">
-                    <input type="checkbox" id="t4" onchange="saveProgress()">
-                    <label for="t4">
-                        <div class="checkbox"></div>
-                        <div class="task-text">
-                            <div class="task-title">Confirmar cobertura mínima: 30/60/15</div>
-                            <div class="task-detail">MD requiere más cobertura que VA</div>
-                        </div>
-                    </label>
-                </div>
-
-                <div class="info-box warning">
-                    ⚠️ <strong>Importante:</strong> NO canceles el seguro de VA hasta entregar las placas de VA.
-                </div>
+            <div class="info-callout warning">
+                <span class="icon">⚠️</span>
+                <span><strong>No canceles</strong> el seguro de Virginia hasta haber devuelto las placas viejas.</span>
             </div>
         </div>
+    </div>
 
-        <!-- FASE 2 -->
-        <div class="phase" data-phase="2">
-            <div class="phase-header" onclick="togglePhase(this)">
-                <div class="left">
-                    <div class="phase-num">2</div>
-                    <h2>Documentos de Residencia</h2>
-                </div>
-                <span class="arrow">▼</span>
-            </div>
-            <div class="phase-content">
-                <div class="info-box">
-                    📄 Necesitas <strong>2 documentos diferentes</strong> de 2 organizaciones diferentes.
-                </div>
+    <!-- PHASE 2 -->
+    <div class="card">
+        <div class="section-header" onclick="toggleCard(this)">
+            <span class="section-title">2. Documentos de Residencia</span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </div>
+        <div class="card-content">
+            <p class="task-desc" style="margin-bottom: 12px;">Se requieren 2 documentos de diferentes fuentes.</p>
 
-                <div class="task">
+            <div class="task-item">
+                <div class="checkbox-wrapper">
                     <input type="checkbox" id="t5" onchange="saveProgress()">
-                    <label for="t5">
-                        <div class="checkbox"></div>
-                        <div class="task-text">
-                            <div class="task-title">Documento 1</div>
-                            <div class="task-detail">Contrato de renta, factura de luz/gas/agua, estado de cuenta bancario (últimos 60 días)</div>
-                        </div>
-                    </label>
+                    <div class="custom-checkbox"></div>
                 </div>
+                <div class="task-content">
+                    <div class="task-title">Prueba de Residencia 1</div>
+                    <div class="task-desc">Ej: Contrato de alquiler, escritura, o factura de servicios (luz/agua).</div>
+                </div>
+            </div>
 
-                <div class="task">
+            <div class="task-item">
+                <div class="checkbox-wrapper">
                     <input type="checkbox" id="t6" onchange="saveProgress()">
-                    <label for="t6">
-                        <div class="checkbox"></div>
-                        <div class="task-text">
-                            <div class="task-title">Documento 2</div>
-                            <div class="task-detail">Debe ser de una organización DIFERENTE al documento 1</div>
-                        </div>
-                    </label>
+                    <div class="custom-checkbox"></div>
+                </div>
+                <div class="task-content">
+                    <div class="task-title">Prueba de Residencia 2</div>
+                    <div class="task-desc">Ej: Estado de cuenta bancaria (últimos 60 días), correspondencia oficial.</div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- FASE 3 -->
-        <div class="phase" data-phase="3">
-            <div class="phase-header" onclick="togglePhase(this)">
-                <div class="left">
-                    <div class="phase-num">3</div>
-                    <h2>Inspección de Seguridad</h2>
-                </div>
-                <span class="arrow">▼</span>
+    <!-- PHASE 3 -->
+    <div class="card">
+        <div class="section-header" onclick="toggleCard(this)">
+            <span class="section-title">3. Inspección de Seguridad</span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </div>
+        <div class="card-content">
+            <div class="info-callout">
+                <span class="icon">🔧</span>
+                <span>Costo aprox: $80-100. Válido por 90 días.</span>
             </div>
-            <div class="phase-content">
-                <div class="info-box">
-                    🔧 Costo: ~$80 | Válida por 90 días
-                </div>
 
-                <div class="task">
+            <div class="task-item">
+                <div class="checkbox-wrapper">
                     <input type="checkbox" id="t7" onchange="saveProgress()">
-                    <label for="t7">
-                        <div class="checkbox"></div>
-                        <div class="task-text">
-                            <div class="task-title">Encontrar estación de inspección</div>
-                            <div class="task-detail">Busca "Maryland safety inspection near me"</div>
-                        </div>
-                    </label>
+                    <div class="custom-checkbox"></div>
                 </div>
+                <div class="task-content">
+                    <div class="task-title">Realizar Inspección Estatal</div>
+                    <div class="task-desc">Busca "Maryland State Inspection" en Google Maps.</div>
+                </div>
+            </div>
 
-                <div class="task">
+            <div class="task-item">
+                <div class="checkbox-wrapper">
                     <input type="checkbox" id="t8" onchange="saveProgress()">
-                    <label for="t8">
-                        <div class="checkbox"></div>
-                        <div class="task-text">
-                            <div class="task-title">Hacer la inspección</div>
-                            <div class="task-detail">Llevar el auto + ID + pago</div>
-                        </div>
-                    </label>
+                    <div class="custom-checkbox"></div>
                 </div>
+                <div class="task-content">
+                    <div class="task-title">Obtener Certificado de Inspección</div>
+                    <div class="task-desc">El taller lo envía electrónicamente, pero pide copia impresa.</div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                <div class="task">
+    <!-- PHASE 4 -->
+    <div class="card">
+        <div class="section-header" onclick="toggleCard(this)">
+            <span class="section-title">4. Título e Impuestos</span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </div>
+        <div class="card-content">
+            <div class="info-callout success">
+                <span class="icon">💰</span>
+                <span><strong>Ahorro Importante:</strong> Como ya pagaste impuestos en VA, solo pagarás la diferencia.</span>
+            </div>
+
+            <div class="task-item">
+                <div class="checkbox-wrapper">
                     <input type="checkbox" id="t9" onchange="saveProgress()">
-                    <label for="t9">
-                        <div class="checkbox"></div>
-                        <div class="task-text">
-                            <div class="task-title">Guardar el certificado</div>
-                            <div class="task-detail">Lo necesitas para el MVA</div>
-                        </div>
-                    </label>
+                    <div class="custom-checkbox"></div>
+                </div>
+                <div class="task-content">
+                    <div class="task-title">Ubicar Título Original de VA</div>
+                    <div class="task-desc">Es necesario el documento original, no copia.</div>
                 </div>
             </div>
-        </div>
 
-        <!-- FASE 4 -->
-        <div class="phase" data-phase="4">
-            <div class="phase-header" onclick="togglePhase(this)">
-                <div class="left">
-                    <div class="phase-num">4</div>
-                    <h2>Prueba de Emisiones (VEIP)</h2>
-                </div>
-                <span class="arrow">▼</span>
-            </div>
-            <div class="phase-content">
-                <div class="info-box">
-                    🌿 Costo: $14 | Solo en ciertos condados
-                </div>
-
-                <p style="font-size: 14px; color: #6b7280; margin: 0 0 12px;">
-                    <strong>¿La necesitas?</strong><br>
-                    SÍ si vives en: Baltimore, Montgomery, PG, Howard, Anne Arundel, Frederick, Carroll, Charles, Calvert, Washington, Cecil, Harford, Queen Anne's
-                </p>
-
-                <div class="task">
+            <div class="task-item">
+                <div class="checkbox-wrapper">
                     <input type="checkbox" id="t10" onchange="saveProgress()">
-                    <label for="t10">
-                        <div class="checkbox"></div>
-                        <div class="task-text">
-                            <div class="task-title">Ir a estación VEIP</div>
-                            <div class="task-detail">Sin cita necesaria. Mar-Mie: 7am-7pm</div>
-                        </div>
-                    </label>
+                    <div class="custom-checkbox"></div>
                 </div>
-
-                <div class="task">
-                    <input type="checkbox" id="t11" onchange="saveProgress()">
-                    <label for="t11">
-                        <div class="checkbox"></div>
-                        <div class="task-text">
-                            <div class="task-title">Guardar el certificado VEIP</div>
-                            <div class="task-detail">Lo necesitas para el MVA</div>
-                        </div>
-                    </label>
+                <div class="task-content">
+                    <div class="task-title">Verificar Plazo de 60 Días</div>
+                    <div class="task-desc">El crédito fiscal solo aplica si registras dentro de los 60 días de mudarte.</div>
                 </div>
-
-                <a href="https://mva.maryland.gov/locations/Pages/mvaveiplocations.aspx" class="link-btn" target="_blank">
-                    📍 Ver estaciones VEIP
-                </a>
+            </div>
+            
+            <div style="margin-top: 12px; font-size: 13px; color: var(--text-secondary); background: var(--bg-color); padding: 12px; border-radius: 8px;">
+                <strong>Cálculo estimado:</strong><br>
+                Impuesto MD (6%) - Impuesto VA Pagado (4.15%)<br>
+                <strong>Total a pagar: ~$750</strong> (en lugar de $2,000+)
             </div>
         </div>
+    </div>
 
-        <!-- FASE 5 -->
-        <div class="phase" data-phase="5">
-            <div class="phase-header" onclick="togglePhase(this)">
-                <div class="left">
-                    <div class="phase-num">5</div>
-                    <h2>Cita en el MVA</h2>
-                </div>
-                <span class="arrow">▼</span>
+    <!-- PHASE 5 -->
+    <div class="card">
+        <div class="section-header" onclick="toggleCard(this)">
+            <span class="section-title">5. Cita en el MVA</span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </div>
+        <div class="card-content">
+            <div class="info-callout warning">
+                <span class="icon">📅</span>
+                <span>El MVA no atiende sin cita previa.</span>
             </div>
-            <div class="phase-content">
-                <div class="info-box warning">
-                    ⚠️ <strong>NECESITAS CITA.</strong> No aceptan sin cita.
-                </div>
 
-                <div class="task">
+            <div class="task-item">
+                <div class="checkbox-wrapper">
                     <input type="checkbox" id="t12" onchange="saveProgress()">
-                    <label for="t12">
-                        <div class="checkbox"></div>
-                        <div class="task-text">
-                            <div class="task-title">Hacer cita en línea</div>
-                            <div class="task-detail">Selecciona "Vehicle Titling and Registration"</div>
-                        </div>
-                    </label>
+                    <div class="custom-checkbox"></div>
                 </div>
+                <div class="task-content">
+                    <div class="task-title">Agendar Cita Online</div>
+                    <div class="task-desc">Servicio: "Title and Registration".</div>
+                    <a href="https://mva.maryland.gov" target="_blank" class="action-btn">Agendar en MVA Maryland</a>
+                </div>
+            </div>
 
-                <a href="https://mva.maryland.gov" class="link-btn" target="_blank">
-                    📅 Hacer cita en MVA
-                </a>
-
-                <div class="task">
+            <div class="task-item">
+                <div class="checkbox-wrapper">
                     <input type="checkbox" id="t13" onchange="saveProgress()">
-                    <label for="t13">
-                        <div class="checkbox"></div>
-                        <div class="task-text">
-                            <div class="task-title">Descargar formulario VR-005</div>
-                            <div class="task-detail">Llenarlo antes de ir al MVA</div>
-                        </div>
-                    </label>
+                    <div class="custom-checkbox"></div>
                 </div>
-
-                <a href="https://mva.maryland.gov/Documents/VR-005.pdf" class="link-btn" target="_blank">
-                    📄 Descargar VR-005
-                </a>
-            </div>
-        </div>
-
-        <!-- FASE 6 -->
-        <div class="phase" data-phase="6">
-            <div class="phase-header" onclick="togglePhase(this)">
-                <div class="left">
-                    <div class="phase-num">6</div>
-                    <h2>Día del MVA</h2>
-                </div>
-                <span class="arrow">▼</span>
-            </div>
-            <div class="phase-content">
-                <p class="section-title">Llevar al MVA:</p>
-
-                <div class="task">
-                    <input type="checkbox" id="t14" onchange="saveProgress()">
-                    <label for="t14">
-                        <div class="checkbox"></div>
-                        <div class="task-text">
-                            <div class="task-title">Título de Virginia (original)</div>
-                        </div>
-                    </label>
-                </div>
-
-                <div class="task">
-                    <input type="checkbox" id="t15" onchange="saveProgress()">
-                    <label for="t15">
-                        <div class="checkbox"></div>
-                        <div class="task-text">
-                            <div class="task-title">Formulario VR-005 completado</div>
-                        </div>
-                    </label>
-                </div>
-
-                <div class="task">
-                    <input type="checkbox" id="t16" onchange="saveProgress()">
-                    <label for="t16">
-                        <div class="checkbox"></div>
-                        <div class="task-text">
-                            <div class="task-title">Certificado de inspección + VEIP</div>
-                        </div>
-                    </label>
-                </div>
-
-                <div class="task">
-                    <input type="checkbox" id="t17" onchange="saveProgress()">
-                    <label for="t17">
-                        <div class="checkbox"></div>
-                        <div class="task-text">
-                            <div class="task-title">Tarjeta de seguro de MD + 2 pruebas de residencia + ID</div>
-                        </div>
-                    </label>
-                </div>
-
-                <div class="info-box">
-                    💰 <strong>Costo aproximado:</strong> $420 - $500
-                </div>
-
-                <div class="info-box success">
-                    ✅ Sales con: Placas nuevas de MD + registro temporal
+                <div class="task-content">
+                    <div class="task-title">Llenar Formulario VR-005</div>
+                    <div class="task-desc">"Application for Certificate of Title".</div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- FASE 7 -->
-        <div class="phase" data-phase="7">
-            <div class="phase-header" onclick="togglePhase(this)">
-                <div class="left">
-                    <div class="phase-num">7</div>
-                    <h2>Entregar Placas de VA</h2>
-                </div>
-                <span class="arrow">▼</span>
-            </div>
-            <div class="phase-content">
-                <div class="info-box">
-                    📬 Hazlo DESPUÉS de obtener placas de MD
-                </div>
-
-                <div class="task">
+    <!-- PHASE 6 -->
+    <div class="card">
+        <div class="section-header" onclick="toggleCard(this)">
+            <span class="section-title">6. Pasos Finales</span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </div>
+        <div class="card-content">
+            <div class="task-item">
+                <div class="checkbox-wrapper">
                     <input type="checkbox" id="t18" onchange="saveProgress()">
-                    <label for="t18">
-                        <div class="checkbox"></div>
-                        <div class="task-text">
-                            <div class="task-title">Descargar formulario FMS 210</div>
-                            <div class="task-detail">Para recibir reembolso si te quedan 6+ meses</div>
-                        </div>
-                    </label>
+                    <div class="custom-checkbox"></div>
                 </div>
+                <div class="task-content">
+                    <div class="task-title">Recibir Placas de MD</div>
+                    <div class="task-desc">Colocarlas en el auto inmediatamente.</div>
+                </div>
+            </div>
 
-                <a href="https://www.dmv.virginia.gov/sites/default/files/forms/fms210.pdf" class="link-btn" target="_blank">
-                    📄 Descargar FMS 210
-                </a>
-
-                <div class="task">
+            <div class="task-item">
+                <div class="checkbox-wrapper">
                     <input type="checkbox" id="t19" onchange="saveProgress()">
-                    <label for="t19">
-                        <div class="checkbox"></div>
-                        <div class="task-text">
-                            <div class="task-title">Enviar placas + formulario por correo</div>
-                            <div class="task-detail">Virginia DMV, 2300 West Broad St, Richmond, VA 23269</div>
-                        </div>
-                    </label>
+                    <div class="custom-checkbox"></div>
+                </div>
+                <div class="task-content">
+                    <div class="task-title">Devolver Placas de VA</div>
+                    <div class="task-desc">Enviar por correo o entregar en un DMV de Virginia.</div>
                 </div>
             </div>
-        </div>
 
-        <!-- FASE 8 -->
-        <div class="phase" data-phase="8">
-            <div class="phase-header" onclick="togglePhase(this)">
-                <div class="left">
-                    <div class="phase-num">8</div>
-                    <h2>Notificar Impuestos VA</h2>
-                </div>
-                <span class="arrow">▼</span>
-            </div>
-            <div class="phase-content">
-                <div class="task">
+            <div class="task-item">
+                <div class="checkbox-wrapper">
                     <input type="checkbox" id="t20" onchange="saveProgress()">
-                    <label for="t20">
-                        <div class="checkbox"></div>
-                        <div class="task-text">
-                            <div class="task-title">Notificar al condado de Virginia</div>
-                            <div class="task-detail">Para que no te sigan cobrando impuestos de propiedad personal</div>
-                        </div>
-                    </label>
+                    <div class="custom-checkbox"></div>
                 </div>
-
-                <p style="font-size: 13px; color: #6b7280; margin: 12px 0 0;">
-                    Llama o envía email a la oficina del Commissioner of Revenue de tu condado de VA con copia de tu nuevo registro de MD.
-                </p>
+                <div class="task-content">
+                    <div class="task-title">Notificar al Condado de VA</div>
+                    <div class="task-desc">Informar para detener el cobro de impuesto personal.</div>
+                </div>
             </div>
         </div>
+    </div>
 
-        <!-- QUICK LINKS -->
-        <div class="quick-links">
-            <h3>📞 Teléfonos Importantes</h3>
-            <p style="margin: 8px 0; font-size: 14px;">
-                <strong>MVA Maryland:</strong> <a href="tel:4107687000" class="phone-link">(410) 768-7000</a>
-            </p>
-            <p style="margin: 8px 0; font-size: 14px;">
-                <strong>DMV Virginia:</strong> <a href="tel:8044977100" class="phone-link">(804) 497-7100</a>
-            </p>
+    <div class="reset-container">
+        <button class="reset-link" onclick="resetProgress()">Reiniciar Checklist</button>
+        <div style="margin-top: 10px; font-size: 11px; color: var(--text-secondary);">
+            Información basada en regulaciones de 2025.<br>
+            Verificar detalles en mva.maryland.gov
         </div>
-
-        <div class="quick-links">
-            <h3>⚠️ Recordatorios Clave</h3>
-            <ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #4b5563;">
-                <li style="margin-bottom: 8px;"><strong>60 días máximo</strong> para registrar en MD después de mudarte</li>
-                <li style="margin-bottom: 8px;"><strong>NO canceles</strong> seguro de VA hasta entregar placas</li>
-                <li><strong>Guarda copias</strong> de todos los documentos</li>
-            </ul>
-        </div>
-
-        <div class="quick-links">
-            <h3>📝 Mis Notas</h3>
-            <textarea class="notes-area" id="userNotes" placeholder="Escribe tus notas aquí..." onchange="saveNotes()"></textarea>
-        </div>
-
-        <button class="reset-btn" onclick="resetProgress()">
-            🔄 Empezar de Nuevo
-        </button>
-
-        <p style="text-align: center; color: rgba(255,255,255,0.7); font-size: 12px; margin-top: 20px;">
-            Guía creada: Diciembre 2025<br>
-            Verifica info actual en mva.maryland.gov
-        </p>
     </div>
 
     <script>
-        // Load saved progress on page load
-        window.onload = function() {
+        // Logic handles UI interactions and Persistence
+        document.addEventListener('DOMContentLoaded', () => {
             loadProgress();
-            loadNotes();
-            updateProgressBar();
-        };
+            updateProgressDisplay();
+        });
 
-        function togglePhase(header) {
-            const phase = header.parentElement;
-            phase.classList.toggle('open');
+        function toggleCard(header) {
+            const card = header.parentElement;
+            card.classList.toggle('open');
         }
 
         function saveProgress() {
@@ -751,12 +668,12 @@
             checkboxes.forEach(cb => {
                 progress[cb.id] = cb.checked;
             });
-            localStorage.setItem('vaToMdChecklist', JSON.stringify(progress));
-            updateProgressBar();
+            localStorage.setItem('mdTransferProgress', JSON.stringify(progress));
+            updateProgressDisplay();
         }
 
         function loadProgress() {
-            const saved = localStorage.getItem('vaToMdChecklist');
+            const saved = localStorage.getItem('mdTransferProgress');
             if (saved) {
                 const progress = JSON.parse(saved);
                 Object.keys(progress).forEach(id => {
@@ -766,55 +683,26 @@
             }
         }
 
-        function updateProgressBar() {
+        function updateProgressDisplay() {
             const checkboxes = document.querySelectorAll('input[type="checkbox"]');
             const total = checkboxes.length;
             let completed = 0;
+            
             checkboxes.forEach(cb => {
                 if (cb.checked) completed++;
             });
 
-            const percent = (completed / total) * 100;
+            const percent = Math.round((completed / total) * 100);
             document.getElementById('progressFill').style.width = percent + '%';
-            document.getElementById('progressText').textContent = completed + ' de ' + total + ' completados';
-
-            // Update phase numbers
-            document.querySelectorAll('.phase').forEach(phase => {
-                const phaseCheckboxes = phase.querySelectorAll('input[type="checkbox"]');
-                let phaseComplete = true;
-                phaseCheckboxes.forEach(cb => {
-                    if (!cb.checked) phaseComplete = false;
-                });
-                const phaseNum = phase.querySelector('.phase-num');
-                if (phaseComplete && phaseCheckboxes.length > 0) {
-                    phaseNum.classList.add('complete');
-                    phaseNum.textContent = '✓';
-                } else {
-                    phaseNum.classList.remove('complete');
-                    phaseNum.textContent = phase.dataset.phase;
-                }
-            });
-        }
-
-        function saveNotes() {
-            const notes = document.getElementById('userNotes').value;
-            localStorage.setItem('vaToMdNotes', notes);
-        }
-
-        function loadNotes() {
-            const saved = localStorage.getItem('vaToMdNotes');
-            if (saved) {
-                document.getElementById('userNotes').value = saved;
-            }
+            document.getElementById('progressText').textContent = `${percent}% Completado`;
         }
 
         function resetProgress() {
-            if (confirm('¿Estás segura que quieres empezar de nuevo? Se borrarán todas las marcas.')) {
-                localStorage.removeItem('vaToMdChecklist');
-                document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-                    cb.checked = false;
-                });
-                updateProgressBar();
+            if (confirm('¿Reiniciar todo el progreso?')) {
+                localStorage.removeItem('mdTransferProgress');
+                document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+                updateProgressDisplay();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
     </script>
